@@ -1,11 +1,48 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;}
 
 /*LOGIN*/
-.body{background-color: #c8c8c0;}
+.body {
+    background-color: #c8c8c0;}
 
+.btn {
+    background-color: orange;}
 
-.btn{background-color: orange; }
-.btn:hover{background-color: #ff8c00; }
+.btn:hover {
+    background-color: #ff8c00;}
 
-.links{color: white;}
-.links:hover{color: #ff8c00;}
+.links {
+    color: white;}
 
+.links:hover {
+    color: #ff8c00;}
+
+/*NavBar*/
+/* Asegura que la imagen sea flexible y se ajuste bien al contenedor */
+.navbar-brand img {
+    max-width: 100%;
+    height: 20px;
+    width: 20px; /* Ajusta el tamaño según lo que necesites */
+}
+
+/* Opcional: si quieres que se reduzca en pantallas pequeñas */
+@media (max-width: 768px) {
+    
+
+    /* Configura el contenedor para alinear los elementos */
+    .container {
+        display: flex;
+        align-items: center;        /* Centra verticalmente */
+        justify-content: center;  /* Deja espacio entre los elementos */
+        width: 100%;
+        flex-direction: column;
+    }
+
+}

@@ -1,31 +1,48 @@
 <?php
-session_start();
-$error = false;
-$registrado = false;
+require_once  './bd/bd_connection.php';
+require_once  './bd/bd_functions.php';
 
-if ($_SERVER["REQUEST_METHOD"] != "POST" && isset($_SESSION['user'])) {
-    $userData = $_SESSION['user'];
-    if (isset($userData['email']) && isset($userData['contrasenya'])) {
-        $registrado = true;
+    session_start();
+    $error      = false;
+    $registrado = false;
+
+    if (isset($_SESSION['user'])) {
+        header("Location: principal.php");
+        exit;
+    } elseif ($_SERVER["REQUEST_METHOD"] === "POST") {
+        $username  = filter_input(INPUT_POST, "username", FILTER_SANITIZE_STRING);
+        $email     = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL);
+        $name1     = filter_input(INPUT_POST, "name1", FILTER_SANITIZE_STRING);
+        $name2     = filter_input(INPUT_POST, "name2", FILTER_SANITIZE_STRING);
+        $pass      = filter_input(INPUT_POST, "pass", FILTER_SANITIZE_STRING);
+        $verifPass = filter_input(INPUT_POST, "verifPass", FILTER_SANITIZE_STRING);
+
+        $db = connectarBD();
+
+        $query = $db->prepare("SELECT iduser FROM users WHERE mail = :mail");
+        $query->bindParam(':mail', $mail, PDO::PARAM_STR);
+        $query->execute();
+
+        if ($query->rowCount() > 0) {
+            $error = "Aquest correu ja està registrat.";
+        } else {
+
+            $hashedPass  = password_hash($pass, PASSWORD_BCRYPT);
+            
+            $result = insertUsuariBD($email, $username, $hashedPass, $name1, $name2, date('Y-m-d H:i:s'), null, date('Y-m-d H:i:s'), 1);
+            if ($result) {
+                $_SESSION['user'] = [
+                    'username' => $username,
+                    'email'    => $mail,
+                ];
+                header("Location: principal.php");
+                exit;
+            } else {
+                $error = "Error al registrar l'usuari.";
+            }
+        }
     }
-} elseif ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = isset($_POST["email"]) ? htmlspecialchars(trim($_POST["email"])) : "";
-    $contrasenya = isset($_POST["contrasenya"]) ? htmlspecialchars(trim($_POST["contrasenya"])) : "";
 
-    if (!empty($email) || !empty($contrasenya)) {
-        $registrado = true;
-        $userData = [
-            'email' => $email,
-            'contrasenya' => $contrasenya
-        ];
-        $_SESSION["user"] = $userData;
-    }
-}
-
-// if ($registrado) {
-//     header("Location: principal.php");
-//     exit;
-// }
 ?>
 <!DOCTYPE html>
 <html lang="ca">
@@ -38,9 +55,8 @@ if ($_SERVER["REQUEST_METHOD"] != "POST" && isset($_SESSION['user'])) {
 </head>
 <body class="body d-flex vh-100 justify-content-center align-items-center">
     <div>
-        <h1 class="text-center mb-4">Registre d'Usuari</h1>
         <!-- Logo -->
-        <div class="text-center mb-4">
+        <div class="text-center">
             <img src="./imgs/logo.jpg" alt="logo" style="height: 20vh;">
         </div>
         <!-- Formulario -->
@@ -72,11 +88,11 @@ if ($_SERVER["REQUEST_METHOD"] != "POST" && isset($_SESSION['user'])) {
             </div>
             <!-- Campo Verificar Contraseña -->
             <div class="mb-3">
-                <label for="verifPass" class="form-label">Verifica la Contrasenya:</label>
+                <label for="verifPass" class="label">Verifica la Contrasenya:</label>
                 <input name="verifPass" type="password" class="form-control" id="verifPass" placeholder="Verifica la Contrasenya" required>
             </div>
             <!-- Botón de envío -->
-            <div class="d-grid">
+            <div class="d-grid mb-5">
                 <button type="submit" class="btn">Registrar-se</button>
             </div>
         </form>

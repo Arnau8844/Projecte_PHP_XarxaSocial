@@ -1,30 +1,34 @@
 <?php
-session_start();
-$error = false;
-$registrado = false;
+require_once  './bd/bd_functions.php';
 
-if ($_SERVER["REQUEST_METHOD"] != "POST" && isset($_SESSION['user'])) {
-    $userData = $_SESSION['user'];
-    if (isset($userData['email']) && isset($userData['contrasenya'])) {
-        $registrado = true;
-    }
-} elseif ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = isset($_POST["email"]) ? htmlspecialchars(trim($_POST["email"])) : "";
-    $contrasenya = isset($_POST["contrasenya"]) ? htmlspecialchars(trim($_POST["contrasenya"])) : "";
+    session_start();
+    $error      = false;
+    $registrado = false;
 
-    if (!empty($email) || !empty($contrasenya)) {
-        $registrado = true;
-        $userData = [
-            'email' => $email,
-            'contrasenya' => $contrasenya
-        ];
-        $_SESSION["user"] = $userData;
+    if (isset($_SESSION['user'])) {
+        header("Location: home.php");
+        exit;
+    } else
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $mail       = isset($_POST["mail"]) ? htmlspecialchars(trim($_POST["mail"])) : "";
+        $contrasenya = isset($_POST["contrasenya"]) ? htmlspecialchars(trim($_POST["contrasenya"])) : "";
+
+        if (! empty($mail) || ! empty($contrasenya)) {
+
+            $registrado = usuarioRegistrado($mail, $contrasenya);
+            if ($registrado) {
+                $userData   = [
+                    'mail'       => $mail,
+                    'contrasenya' => $contrasenya,
+                ];
+                $_SESSION["user"] = $userData;
+                header("Location: home.php");
+            }
+            else {
+                $registrado = "Usuari o contrasenya incorrectes.";
+            }
+        }
     }
-}
-// if ($registrado) {
-//     header("Location: principal.php");
-//     exit;
-// }
 ?>
 <!DOCTYPE html>
 <html lang="ca">
@@ -43,10 +47,10 @@ if ($_SERVER["REQUEST_METHOD"] != "POST" && isset($_SESSION['user'])) {
                 <img src="./imgs/logo.jpg" alt="logo" class="logo-img " style="width: auto; height: 20vh;">
             </div>
             <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST" enctype="multipart/form-data" class="form-signin">
-                <!-- Campo Email -->
+                <!-- Campo mail -->
                 <div class="mb-3">
-                    <label for="email" class="form-label">Correu Electrònic:</label>
-                    <input type="email" name="email" class="form-control" id="email" placeholder="Introdueix el teu email" required>
+                    <label for="mail" class="form-label">Usuari o Correu:</label>
+                    <input type="text" name="mail" class="form-control" id="mail" placeholder="Introdueix el teu mail" required>
                 </div>
                 <!-- Campo Contraseña -->
                 <div class="mb-3">
@@ -55,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] != "POST" && isset($_SESSION['user'])) {
                 </div>
                 <!-- Botón de envío -->
                 <div class="d-grid">
-                    <button type="submit" class="btn">Enviar</button>
+                    <button type="submit" class="btn">Entrar</button>
                 </div>
                 <!-- Enlace a registro -->
                 <div class="mt-3 text-center">
