@@ -1,45 +1,56 @@
 <?php
-require_once  './bd/bd_connection.php';
-require_once  './bd/bd_functions.php';
+    require_once './bd/bd_connection.php';
+    require_once './bd/bd_functions.php';
 
     session_start();
     $error      = false;
     $registrado = false;
+    $db         = connectarBD();
+    $mail       = " ";
 
     if (isset($_SESSION['user'])) {
-        header("Location: principal.php");
-        exit;
+
+        $mail = $_SESSION['user']['mail'];
+
+        $query = $db->prepare("SELECT active FROM users WHERE mail = :email");
+        $query->bindParam(':email', $mail, PDO::PARAM_STR);
+        $query->execute();
+
+        $row = $query->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            if ($row['active'] == 1) {
+
+                header("Location: home.php");
+                exit;
+
+            } else {
+                $error = "Activa el teu compte Siusplau.";
+                alert("<?php echo addslashes($error); ?>");
+            }
+        }
     } elseif ($_SERVER["REQUEST_METHOD"] === "POST") {
+
         $username  = filter_input(INPUT_POST, "username", FILTER_SANITIZE_STRING);
-        $email     = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL);
+        $mail     = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL);
         $name1     = filter_input(INPUT_POST, "name1", FILTER_SANITIZE_STRING);
         $name2     = filter_input(INPUT_POST, "name2", FILTER_SANITIZE_STRING);
         $pass      = filter_input(INPUT_POST, "pass", FILTER_SANITIZE_STRING);
         $verifPass = filter_input(INPUT_POST, "verifPass", FILTER_SANITIZE_STRING);
 
-        $db = connectarBD();
+        $hashedPass = password_hash($pass, PASSWORD_BCRYPT);
 
-        $query = $db->prepare("SELECT iduser FROM users WHERE mail = :mail");
-        $query->bindParam(':mail', $mail, PDO::PARAM_STR);
-        $query->execute();
-
-        if ($query->rowCount() > 0) {
-            $error = "Aquest correu ja està registrat.";
+        $result = insertUsuariBD($mail, $username, $hashedPass, $name1, $name2, date('Y-m-d H:i:s'), null, date('Y-m-d H:i:s'));
+        if ($result) {
+            $_SESSION['user'] = [
+                'username' => $username,
+                'mail'     => $mail,
+                'active'   => 0,
+            ];
+            header("Location: index.php");
+            exit;
         } else {
-
-            $hashedPass  = password_hash($pass, PASSWORD_BCRYPT);
-            
-            $result = insertUsuariBD($email, $username, $hashedPass, $name1, $name2, date('Y-m-d H:i:s'), null, date('Y-m-d H:i:s'), 1);
-            if ($result) {
-                $_SESSION['user'] = [
-                    'username' => $username,
-                    'email'    => $mail,
-                ];
-                header("Location: principal.php");
-                exit;
-            } else {
-                $error = "Error al registrar l'usuari.";
-            }
+            $error = "Error al registrar l'usuari.";
         }
     }
 
@@ -73,8 +84,8 @@ require_once  './bd/bd_functions.php';
             </div>
             <!-- Campo Primer Nombre -->
             <div class="mb-3">
-                <label for="name1" class="form-label">Primer Nom:</label>
-                <input name="name1" type="text" class="form-control" id="name1" placeholder="Primer Nom" required>
+                <label for="name1" class="form-label">Nom:</label>
+                <input name="name1" type="text" class="form-control" id="name1" placeholder="Nom" required>
             </div>
             <!-- Campo Apellido -->
             <div class="mb-3">

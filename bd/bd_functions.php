@@ -33,15 +33,12 @@ function insertUsuariBD(
     string $userLastName, 
     string $creationDate, 
     ?string $removeDate, 
-    ?string $lastSignIn, 
-    int $active = 1
-): ?PDO {
-
+    ?string $lastSignIn 
+): bool {
     try {
-        
         $db = connectarBD();
 
-        $sql = "INSERT INTO `users` (
+        $sql = "INSERT INTO users (
                     mail, 
                     username, 
                     passHash, 
@@ -52,28 +49,39 @@ function insertUsuariBD(
                     lastSignIn, 
                     active
                 ) VALUES (
-                    '$mail', 
-                    '$username', 
-                    ' $password ', 
-                    '$userFirstName', 
-                    '$userLastName', 
-                    '$creationDate', 
-                    " . ($removeDate ? "'$removeDate'" : "NULL") . ", 
-                    " . ($lastSignIn ? "'$lastSignIn'" : "NULL") . ", 
-                    $active
+                    :mail, 
+                    :username, 
+                    :password, 
+                    :userFirstName, 
+                    :userLastName, 
+                    :creationDate, 
+                    :removeDate, 
+                    :lastSignIn, 
+                    :active
                 )";
 
-        $insert = $db->query($sql);
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':mail', $mail, PDO::PARAM_STR);
+        $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+        $stmt->bindParam(':password', $password, PDO::PARAM_STR);
+        $stmt->bindParam(':userFirstName', $userFirstName, PDO::PARAM_STR);
+        $stmt->bindParam(':userLastName', $userLastName, PDO::PARAM_STR);
+        $stmt->bindParam(':creationDate', $creationDate, PDO::PARAM_STR);
+        $stmt->bindParam(':removeDate', $removeDate, $removeDate ? PDO::PARAM_STR : PDO::PARAM_NULL);
+        $stmt->bindParam(':lastSignIn', $lastSignIn, $lastSignIn ? PDO::PARAM_STR : PDO::PARAM_NULL);
+        $active = 0;
+        $stmt->bindParam(':active', $active, PDO::PARAM_INT);
 
-        if ($insert) { $result = $insert->rowCount(); }
+        return $stmt->execute();
     
-    } catch (PDOException $e) { $result = null; }
-
-    return $result;
+    } catch (PDOException $e) { 
+        error_log('Error en la BD: ' . $e->getMessage());
+        return false;
+    }
 }
 
 
-function usuarioRegistrado(string $mail, string $contrasenya): bool
+function usuarioRegistrado(string $mail): bool
 {
     $registrado = false;
 
