@@ -32,17 +32,4 @@ body {
     width: 20px; /* Ajusta el tamaño según lo que necesites */
 }
 
-/* Opcional: si quieres que se reduzca en pantallas pequeñas */
-@media (max-width: 768px) {
-    
-
-    /* Configura el contenedor para alinear los elementos */
-    .container {
-        display: flex;
-        align-items: center;        /* Centra verticalmente */
-        justify-content: center;  /* Deja espacio entre los elementos */
-        width: 100%;
-        flex-direction: column;
-    }
-
-}
+/* Asegura que el dropdown se vea bien en móviles */

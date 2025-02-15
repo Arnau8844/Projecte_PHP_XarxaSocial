@@ -1,32 +1,46 @@
 <?php
     require_once './bd/bd_functions.php';
     session_start();
-    $error = false;
+    $error      = false;
     $registrado = false;
+    $mail       = " ";
+
 
     if (isset($_SESSION['user'])) {
-        if ($_SESSION['user']['active'] == 1) {
+
+        $mail = $_SESSION['user']['mail'];
+
+        if (activatedUser($mail)) {
             header("Location: home.php");
             exit;
+
         } else {
+    
             $error = "El teu compte encara no està actiu. Si us plau, verifica el teu correu.";
+        
         }
+    
     } elseif ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $mail = isset($_POST["mail"]) ? htmlspecialchars(trim($_POST["mail"])) : "";
+        
+        $mail        = isset($_POST["mail"]) ? htmlspecialchars(trim($_POST["mail"])) : "";
         $contrasenya = isset($_POST["contrasenya"]) ? htmlspecialchars(trim($_POST["contrasenya"])) : "";
 
-        if (!empty($mail) && !empty($contrasenya)) {
-            $registrado = usuarioRegistrado($mail, $contrasenya);
+        if (! empty($mail) && ! empty($contrasenya)) {
+
+            $registrado = loginUser($mail, $contrasenya);
+            
             if ($registrado) {
-                $_SESSION["user"] = [
-                    'mail' => $mail,
-                    'contrasenya' => $contrasenya,
-                    'active' => $registrado['active'] ?? 0
-                ];
-                
-                if ($_SESSION['user']['active'] == 1) {
+
+                if (activatedUser($mail)) {
+
+                    $_SESSION['user'] = [
+                        'username' => $username,
+                        'mail'     => $mail,
+                    ];
+
                     header("Location: home.php");
                     exit;
+                    
                 } else {
                     $error = "El teu compte encara no està actiu. Si us plau, verifica el teu correu.";
                 }
@@ -48,17 +62,26 @@
 <body class="body">
 
 <?php if ($error): ?>
-    <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1050;">
-        <div class="toast show align-items-center text-bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body">
-                    <?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?>
-                </div>
-                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
-    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'error',
+                title: '<?php echo addslashes(htmlspecialchars($error, ENT_QUOTES, "UTF-8")); ?>',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                background: '#f8d7da',
+                color: '#721c24',
+                customClass: {
+                    popup: 'small-toast'
+                }
+            });
+        });
+    </script>
 <?php endif; ?>
+
 
 <div class="login-container d-flex justify-content-center align-items-center" style="height: 100vh;">
     <div class="form-container">
@@ -84,6 +107,8 @@
         </form>
     </div>
 </div>
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>

@@ -1,6 +1,7 @@
 <?php
     require_once './bd/bd_connection.php';
     require_once './bd/bd_functions.php';
+    require_once './mail/mail.php';
 
     session_start();
     $error      = false;
@@ -8,28 +9,16 @@
     $db         = connectarBD();
     $mail       = " ";
 
-    if (isset($_SESSION['user'])) {
-
+    if (!empty($_SESSION['user'])) {
+        
         $mail = $_SESSION['user']['mail'];
-
-        $query = $db->prepare("SELECT active FROM users WHERE mail = :email");
-        $query->bindParam(':email', $mail, PDO::PARAM_STR);
-        $query->execute();
-
-        $row = $query->fetch(PDO::FETCH_ASSOC);
-
-        if ($row) {
-            if ($row['active'] == 1) {
-
-                header("Location: home.php");
-                exit;
-
-            } else {
-                $error = "Activa el teu compte Siusplau.";
-                alert("<?php echo addslashes($error); ?>");
-            }
-        }
-    } elseif ($_SERVER["REQUEST_METHOD"] === "POST") {
+    
+        if (activatedUser($mail)) {
+            header("Location: home.php");
+            exit;
+        } 
+    }
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         $username  = filter_input(INPUT_POST, "username", FILTER_SANITIZE_STRING);
         $mail     = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL);
@@ -37,20 +26,32 @@
         $name2     = filter_input(INPUT_POST, "name2", FILTER_SANITIZE_STRING);
         $pass      = filter_input(INPUT_POST, "pass", FILTER_SANITIZE_STRING);
         $verifPass = filter_input(INPUT_POST, "verifPass", FILTER_SANITIZE_STRING);
+        
+        if ($pass !== $verifPass) {
 
-        $hashedPass = password_hash($pass, PASSWORD_BCRYPT);
-
-        $result = insertUsuariBD($mail, $username, $hashedPass, $name1, $name2, date('Y-m-d H:i:s'), null, date('Y-m-d H:i:s'));
-        if ($result) {
-            $_SESSION['user'] = [
-                'username' => $username,
-                'mail'     => $mail,
-                'active'   => 0,
-            ];
-            header("Location: index.php");
-            exit;
+            $error = "Les contrasenyes no coincideixen.";
+        
         } else {
-            $error = "Error al registrar l'usuari.";
+            
+            $hashedPass = password_hash($pass, PASSWORD_BCRYPT);
+            $activationCode = hash('sha256', random_bytes(64));
+
+            $result = insertUsuariBD($mail, $username, $hashedPass, $name1, $name2, NULL, $activationCode, NULL, NULL, NULL, NULL);
+            
+            if ($result) {
+
+                $_SESSION['user'] = [
+                    'username' => $username,
+                    'mail'     => $mail,
+                ];
+
+                enviarCorreoActivacion($mail, $activationCode);
+
+                header("Location: index.php");
+                exit;
+            } else {
+                $error = "Error al registrar l'usuari.";
+            }
         }
     }
 
