@@ -18,7 +18,7 @@ function enviarMail($destinatario, $asunto, $mensaje)
         $mail->Port       = 587;
 
         $mail->Username = 'arnau.mateuf@educem.net';
-        $mail->Password = 'xiif crlh mcux fzzd';
+        $mail->Password = '';
 
         $mail->setFrom('arnau.mateuf@educem.net', 'Arnau');
         $mail->addAddress($destinatario);
