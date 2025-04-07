@@ -3,44 +3,45 @@
     session_start();
     $error      = false;
     $registrado = false;
-    $mail       = " ";
+    $mail       = "";
 
-
-    if (isset($_SESSION['user'])) {
-
+    if (!empty($_SESSION['user']['mail'])) {
+        
         $mail = $_SESSION['user']['mail'];
-
+        
         if (activatedUser($mail)) {
-            header("Location: home.php");
-            exit;
+            header("Location: ./pages/home.php");
 
+            exit;
         } else {
-    
+
+            session_destroy();
             $error = "El teu compte encara no està actiu. Si us plau, verifica el teu correu.";
-        
+
         }
-    
     } elseif ($_SERVER["REQUEST_METHOD"] == "POST") {
-        
+
         $mail        = isset($_POST["mail"]) ? htmlspecialchars(trim($_POST["mail"])) : "";
         $contrasenya = isset($_POST["contrasenya"]) ? htmlspecialchars(trim($_POST["contrasenya"])) : "";
 
         if (! empty($mail) && ! empty($contrasenya)) {
 
-            $registrado = loginUser($mail, $contrasenya);
-            
-            if ($registrado) {
+            // Se asume que loginUser devuelve un array con los datos del usuario o false en caso de error
+            $usuario = loginUser($mail, $contrasenya);
+
+            if ($usuario) {
 
                 if (activatedUser($mail)) {
 
                     $_SESSION['user'] = [
-                        'username' => $username,
-                        'mail'     => $mail,
+                        'id'       => $usuario['iduser'],
+                        'username' => $usuario['username'],
+                        'mail'     => $usuario['mail'],
                     ];
 
-                    header("Location: home.php");
+                    header("Location: ./pages/home.php");
                     exit;
-                    
+
                 } else {
                     $error = "El teu compte encara no està actiu. Si us plau, verifica el teu correu.";
                 }
@@ -58,6 +59,7 @@
     <title>INICI SESSIÓ</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="./styles/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="body">
 
@@ -82,12 +84,11 @@
     </script>
 <?php endif; ?>
 
-
 <div class="login-container d-flex justify-content-center align-items-center" style="height: 100vh;">
     <div class="form-container">
         <h1 class="text-center mb-4">Inici de Sessió</h1>
         <div class="text-center">
-            <img src="./imgs/logo.jpg" alt="logo" class="logo-img" style="width: auto; height: 20vh;">
+            <img src="./imgs/logo-v2-removebg-preview (1).jpg" alt="logo" class="logo-img" style="width: auto; height: 20vh;">
         </div>
         <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST" enctype="multipart/form-data" class="form-signin">
             <div class="mb-3">
@@ -102,7 +103,7 @@
                 <button type="submit" class="btn">Entrar</button>
             </div>
             <div class="mt-3 text-center">
-                <a href="./register.php" class="links">No tens compte encara?</a>
+                <a href="./pages/register.php" class="links">No tens compte encara?</a>
             </div>
         </form>
     </div>

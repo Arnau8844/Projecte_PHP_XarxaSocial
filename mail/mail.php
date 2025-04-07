@@ -40,14 +40,14 @@ function enviarMail($destinatario, $asunto, $mensaje)
 function enviarCorreoActivacion($mail, $token)
 {
     $subject        = "Confirma el teu compte";
-    $activationLink = "http://localhost/Projecte_PHP_xarxaSocial/Projecte_PHP_XarxaSocial/mailCheckAccount.php?token=$token&mail=$mail";
+    $activationLink = "http://localhost/Projecte_PHP_xarxaSocial/Projecte_PHP_XarxaSocial/pages/mailCheckAccount.php?token=$token&mail=$mail";
     
     $body           = "
         <p>Hola,</p>
         <p>Gràcies per registrar-te. Per confirmar el teu compte, fes clic al següent enllaç:</p>
         <p><a href='$activationLink' onclick='this.style.display=\"none\"'>Activa ja el teu compte!</a></p>
         <p>Si no vas sol·licitar aquest registre, ignora aquest missatge.</p>
-        <img src='../imgs/logo.jpg' alt='Imatge de confirmació'/>
+        <img src='C:\xampp\htdocs\XarxaSocialImgs' alt='Imatge de confirmació'/>
     ";
 
     return enviarMail($mail, $subject, $body);
