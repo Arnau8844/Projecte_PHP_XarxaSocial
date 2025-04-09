@@ -71,8 +71,9 @@
             </li>
           </ul>
           <div class="text-center mt-4">
-            <img src="../uploads/avatars/<?php echo htmlspecialchars($logedUser['avatar'] ?? 'avatars/default-avatar.png'); ?>" alt="Avatar" class="rounded-circle mb-2" width="60" height="60">
-            <strong class="d-block text-dark"><?php echo htmlspecialchars($_SESSION['user']['username']); ?></strong>
+            <a href="./perfil.php" class="text-decoration-none"><img src="../uploads/avatars/<?php echo htmlspecialchars($logedUser['avatar'] ?? 'avatars/default-avatar.png'); ?>" alt="Avatar" class="rounded-circle mb-2" width="60" height="60">
+            <strong class="d-block text-dark"><?php echo htmlspecialchars($_SESSION['user']['username']); ?></strong></a>
+            
           </div>
         </div>
       </div>

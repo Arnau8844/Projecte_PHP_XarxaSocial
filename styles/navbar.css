@@ -80,7 +80,7 @@
     }
   
     .logo-full {
-      display: none;
+      display: none !important;
     }
   
     .logo-mini {
@@ -110,6 +110,9 @@
     }
   
     .mobile-nav {
+      display: none !important;
+    }
+    .logo-full {
       display: none !important;
     }
   }
@@ -178,4 +181,7 @@
     .main-content {
       margin-left: 120px;
     }
+    
   }
+
+

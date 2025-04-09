@@ -88,7 +88,7 @@
     <div class="form-container">
         <h1 class="text-center mb-4">Inici de Sessió</h1>
         <div class="text-center">
-            <img src="./imgs/logo-v2-removebg-preview (1).jpg" alt="logo" class="logo-img" style="width: auto; height: 20vh;">
+            <img src="./imgs/logo-gran.svg" alt="logo" class="logo-img" style="width: auto; height: 20vh;">
         </div>
         <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST" enctype="multipart/form-data" class="form-signin">
             <div class="mb-3">

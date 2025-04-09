@@ -78,7 +78,7 @@
     <div>
         <!-- Logo -->
         <div class="text-center">
-            <img src="../imgs/logo.jpg" alt="logo" style="height: 20vh;">
+            <img src="../imgs/logo-gran-v2.svg" alt="logo" style="height: 20vh;">
         </div>
         <!-- Formulario -->
         <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST" enctype="multipart/form-data">

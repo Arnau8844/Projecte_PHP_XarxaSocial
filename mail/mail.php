@@ -18,7 +18,7 @@ function enviarMail($destinatario, $asunto, $mensaje)
         $mail->Port       = 587;
 
         $mail->Username = 'arnau.mateuf@educem.net';
-        $mail->Password = '';
+        $mail->Password = 'wdog xxru dhfz dpfy';
 
         $mail->setFrom('arnau.mateuf@educem.net', 'Arnau');
         $mail->addAddress($destinatario);
@@ -40,14 +40,15 @@ function enviarMail($destinatario, $asunto, $mensaje)
 function enviarCorreoActivacion($mail, $token)
 {
     $subject        = "Confirma el teu compte";
-    $activationLink = "http://localhost/Projecte_PHP_xarxaSocial/Projecte_PHP_XarxaSocial/pages/mailCheckAccount.php?token=$token&mail=$mail";
+    $activationLink = "http://localhost/Projecte_PHP_xarxaSocial/pages/mailCheckAccount.php?token=$token&mail=$mail";
     
     $body           = "
         <p>Hola,</p>
         <p>Gràcies per registrar-te. Per confirmar el teu compte, fes clic al següent enllaç:</p>
         <p><a href='$activationLink' onclick='this.style.display=\"none\"'>Activa ja el teu compte!</a></p>
         <p>Si no vas sol·licitar aquest registre, ignora aquest missatge.</p>
-        <img src='C:\xampp\htdocs\XarxaSocialImgs' alt='Imatge de confirmació'/>
+        <img src='http://localhost/Projecte_PHP_xarxaSocial/imgs/logo-gran-v2.svg' alt='Imatge de confirmació'/>
+
     ";
 
     return enviarMail($mail, $subject, $body);

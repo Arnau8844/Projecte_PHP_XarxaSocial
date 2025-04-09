@@ -68,7 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil del Usuario</title>
     <link rel="stylesheet" href="../styles/navbar.css">
-    <link rel="stylesheet" href="../styles/home.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
@@ -82,8 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="d-flex flex-column flex-shrink-0 border-end vh-100 sidebar align-items-center text-center justify-content-between py-4">
         <div class="w-100 d-flex flex-column align-items-center sidebar-content">
           <a href="./home.php" class="d-flex flex-column align-items-center mb-4">
-            <img src="../imgs/logo-gran-v2.svg" alt="Glow-Up Logo" class="logo-full">
-            <img src="../imgs/mini-logo.svg" alt="Glow-Up Mini Logo" class="logo-mini">
+            <img src="../imgs/logo-gran-v2.svg" alt="Glow-Up Logo" class="logo-full ">
+            <img src="../imgs/mini-logo.svg" alt="Glow-Up Mini Logo" class="logo-mini ">
           </a>
           <ul class="nav nav-pills flex-column w-100 gap-2">
             <li class="nav-item">
